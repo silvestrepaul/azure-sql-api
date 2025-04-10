@@ -1,5 +1,6 @@
 import sql from 'mssql';
 
+// Database connection configuration
 const dbConfig = {
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
@@ -20,6 +21,15 @@ export default async function handler(req, res) {
   // Handle OPTIONS requests (preflight request for CORS)
   if (req.method === 'OPTIONS') {
     return res.status(200).end(); // Respond to OPTIONS request
+  }
+
+  // Add API Key validation in the Authorization header
+  const apiKey = process.env.API_KEY;  // Retrieve API Key from environment variables
+  const authHeader = req.headers['authorization'];
+  
+  if (!authHeader || authHeader !== `Bearer ${apiKey}`) {
+    // If API Key is missing or incorrect, return 401 Unauthorized
+    return res.status(401).json({ error: 'Unauthorized' });
   }
 
   // Handle GET request to fetch categories
