@@ -1,0 +1,17 @@
+{
+    "version": 2,
+    "builds": [
+      {
+        "src": "api/categorias.js",
+        "use": "@vercel/node"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/api/categorias",
+        "dest": "/api/categorias.js"
+      }
+    ]
+  }
+
+  
