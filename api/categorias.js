@@ -1,5 +1,9 @@
 import sql from 'mssql';
 
+res.setHeader('Access-Control-Allow-Origin', '*');
+res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
+res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
 const dbConfig = {
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
