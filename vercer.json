@@ -1,17 +1,36 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "api/categorias.js",
-        "use": "@vercel/node"
-      }
-    ],
-    "routes": [
-      {
-        "src": "/api/categorias",
-        "dest": "/api/categorias.js"
-      }
-    ]
-  }
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/categorias.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/categorias",
+      "dest": "/api/categorias.js"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/categorias",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "https://paulmeiners95.wixstudio.com/canchafutbol"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Authorization, Content-Type"
+        }
+      ]
+    }
+  ]
+}
 
   
