@@ -32,7 +32,7 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  // Handle GET request to fetch categories
+  // Handle GET request to fetch records from Pruebas table
   if (req.method === 'GET') {
     try {
       const pool = await sql.connect(dbConfig);
@@ -43,19 +43,36 @@ export default async function handler(req, res) {
       res.status(500).json({ error: 'Error fetching Pruebas' });
     }
   } 
-  // Handle POST request to create a new category
+  // Handle POST request to insert a new record into Pruebas table
   else if (req.method === 'POST') {
-    const { name } = req.body;
+    const { Nombre, Contraseña, email, tarjeta, monto } = req.body;
+
+    if (!Nombre || !Contraseña || !email || !tarjeta || typeof monto !== 'number') {
+      return res.status(400).json({ error: 'Missing or invalid fields' });
+    }
+
     try {
       const pool = await sql.connect(dbConfig);
+      
+      // Prepare SQL query to insert the data
       await pool
         .request()
-        .input('Nombre', sql.VarChar, name)
-        .query('INSERT INTO Pruebas (Nombre) VALUES (@Nombre)');
-      res.status(201).json({ message: 'New category created' });
+        .input('Nombre', sql.NVarChar, Nombre)
+        .input('Contraseña', sql.NVarChar, Contraseña)
+        .input('email', sql.NVarChar, email)
+        .input('tarjeta', sql.NVarChar, tarjeta)
+        .input('monto', sql.Float, monto)
+        .query(`
+          INSERT INTO Pruebas (Nombre, Contraseña, email, tarjeta, monto)
+          VALUES (@Nombre, @Contraseña, @email, @tarjeta, @monto)
+        `);
+      
+      // Return success response
+      res.status(201).json({ message: 'New record created' });
+
     } catch (err) {
-      console.error('Error creating category:', err);
-      res.status(500).json({ error: 'Error creating category' });
+      console.error('Error creating record:', err);
+      res.status(500).json({ error: 'Error creating record' });
     }
   } 
   // Method not allowed

@@ -36,7 +36,7 @@ export default async function handler(req, res) {
   if (req.method === 'GET') {
     try {
       const pool = await sql.connect(dbConfig);
-      const result = await pool.request().query('SELECT * FROM Categorias');
+      const result = await pool.request().query('SELECT * FROM Pruebas');
       res.status(200).json(result.recordset);
     } catch (err) {
       console.error('Error fetching categories:', err);
