@@ -14,7 +14,7 @@ const dbConfig = {
 
 export default async function handler(req, res) {
   // Set CORS headers to allow any domain (for testing) or your Wix domain
-  res.setHeader('Access-Control-Allow-Origin', '*'); // Or use your Wix domain (e.g., 'https://your-wix-site.com')
+  res.setHeader('Access-Control-Allow-Origin', '*'); // Replace with your actual Wix domain for production
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST'); // Allow GET and POST methods
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type'); // Allow Content-Type header
   
@@ -45,19 +45,21 @@ export default async function handler(req, res) {
   } 
   // Handle POST request to insert a new record into Pruebas table
   else if (req.method === 'POST') {
-    const { Consecutivo, Nombre, Contraseña, email, tarjeta, monto } = req.body;
+    const { Nombre, Contraseña, email, tarjeta, monto } = req.body;
 
-    if (!Nombre || !Contraseña || !email || !tarjeta || typeof monto !== 'number') {
+    // Validate input
+    if (!Nombre || !Contraseña || !email || !tarjeta || !monto || typeof monto !== 'number') {
       return res.status(400).json({ error: 'Missing or invalid fields' });
     }
 
     try {
+      console.log("Received data:", { Nombre, Contraseña, email, tarjeta, monto });
+
       const pool = await sql.connect(dbConfig);
       
-      // Prepare SQL query to insert the data
-      await pool
+      // Insert new record and return the new Consecutivo
+      const result = await pool
         .request()
-        .input('Consecutivo', sql.int, Consecutivo)
         .input('Nombre', sql.NVarChar, Nombre)
         .input('Contraseña', sql.NVarChar, Contraseña)
         .input('email', sql.NVarChar, email)
@@ -65,11 +67,14 @@ export default async function handler(req, res) {
         .input('monto', sql.Float, monto)
         .query(`
           INSERT INTO Pruebas (Nombre, Contraseña, email, tarjeta, monto)
-          VALUES (@Nombre, @Contraseña, @email, @tarjeta, @monto)
+          VALUES (@Nombre, @Contraseña, @email, @tarjeta, @monto);
+          SELECT SCOPE_IDENTITY() AS Consecutivo;  -- This returns the last inserted ID
         `);
       
+      const newConsecutivo = result.recordset[0].Consecutivo;
+
       // Return success response
-      res.status(201).json({ message: 'New record created' });
+      res.status(201).json({ message: 'New record created', Consecutivo: newConsecutivo });
 
     } catch (err) {
       console.error('Error creating record:', err);
