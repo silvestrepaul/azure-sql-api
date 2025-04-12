@@ -45,7 +45,7 @@ export default async function handler(req, res) {
   } 
   // Handle POST request to insert a new record into Pruebas table
   else if (req.method === 'POST') {
-    const { Nombre, Contraseña, email, tarjeta, monto } = req.body;
+    const { Consecutivo, Nombre, Contraseña, email, tarjeta, monto } = req.body;
 
     if (!Nombre || !Contraseña || !email || !tarjeta || typeof monto !== 'number') {
       return res.status(400).json({ error: 'Missing or invalid fields' });
@@ -57,6 +57,7 @@ export default async function handler(req, res) {
       // Prepare SQL query to insert the data
       await pool
         .request()
+        .input('Consecutivo', sql.int, Consecutivo)
         .input('Nombre', sql.NVarChar, Nombre)
         .input('Contraseña', sql.NVarChar, Contraseña)
         .input('email', sql.NVarChar, email)
